@@ -2,7 +2,23 @@ no_perms: "<red>You do not have permission to use this command.</red>"
 only_players: "<red>Only players can use this command.</red>"
 
 player_not_found: "<red>Player %player% not found.</red>"
-usage: "<red>Invalid arguments. Usage: %usage%</red>"
+usage: "<red>Invalid arguments. Usage: /sellwand give {player} {uses} [multiplier]</red>"
 
 unknown_cmd: "<red>Unknown command.</red>"
 reloaded: "<green>config.yml and messages.yml have been reloaded.</green>"
+
+not_integer: "<red>Please provide a number.</red>"
+
+sold_items: "<green>Sold <white>%amount%</white> item(s) for <gold>$%price%</gold>. Uses left: <white>%uses%</white>"
+sold_items_with_boost: "<green>Sold <white>%amount%</white> item(s) for <gold>$%price%</gold> (<white>%multiplier%x</white> boost). Uses left: <white>%uses%</white>"
+
+no_sellable_items: "<red>No sellable items found in this container.</red>"
+no_uses_left: "<red>This Sell Wand has no uses left!</red>"
+
+wand_given: "<green>Given <white>%player%</white> a Sell Wand (%uses% uses, %multiplier%x multiplier).</green>"
+wand_received: "<green>You received a Sell Wand!</green>"
+
+container_no_perm: "<red>You don't have permission to access this container.</red>"
+
+econ_not_found: "<red>Economy plugin not found. Cannot process sale.</red>"
+wand_removed: "<red>Your Sell Wand broke!</red>"

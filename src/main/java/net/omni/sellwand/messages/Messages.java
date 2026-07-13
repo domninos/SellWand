@@ -8,10 +8,28 @@ public enum Messages {
     ONLY_PLAYERS("only_players", "<red>Only players can use this command.</red>"),
 
     PLAYER_NOT_FOUND("player_not_found", "<red>Player %player% not found.</red>"),
-    USAGE("usage", "<red>Invalid arguments. Usage: %usage%</red>"),
+    USAGE("usage", "<red>Invalid arguments. Usage: /sellwand give {player} {uses} [multiplier]</red>"),
 
     UNKNOWN_COMMAND("unknown_cmd", "<red>Unknown command.</red>"),
-    RELOADED("reloaded", "<green>config.yml and messages.yml have been reloaded.</green>");
+    RELOADED("reloaded", "<green>config.yml and messages.yml have been reloaded.</green>"),
+
+    SOLD_ITEMS("sold_items", "<green>Sold <white>%amount%</white> item(s) for <gold>$%price%</gold>. Uses left: <white>%uses%</white>"),
+    NO_SELLABLE_ITEMS("no_sellable_items", "<red>No sellable items found in this container.</red>"),
+
+    NOT_INTEGER("not_integer", "<red>Please provide an number.</red>"),
+
+    NO_USES_LEFT("no_uses_left", "<red>This Sell Wand has no uses left!</red>"),
+
+    WAND_GIVEN("wand_given", "<green>Given <white>%player%</white> a Sell Wand (%uses% uses, %multiplier%x multiplier).</green>"),
+    WAND_RECEIVED("wand_received", "<green>You received a Sell Wand!</green>"),
+
+    CONTAINER_NO_PERM("container_no_perm", "<red>You don't have permission to access this container.</red>"),
+
+    ECON_NOT_FOUND("econ_not_found", "<red>Economy plugin not found. Cannot process sale.</red>"),
+
+    WAND_REMOVED("wand_removed", "<red>Your Sell Wand broke!</red>"),
+    MULTIPLIER_INFO("multiplier_info", "<gray>Combined multiplier:</gray> <white>%multiplier%x</white>"),
+    SOLD_ITEMS_WITH_BOOST("sold_items_with_boost", "<green>Sold <white>%amount%</white> item(s) for <gold>$%price%</gold> (<white>%multiplier%x</white> boost). Uses left: <white>%uses%</white>");
 
     private final String path;
     private final Object defaultVal;
@@ -36,7 +54,6 @@ public enum Messages {
 
     public String replace(String... pairs) {
         String result = this.toString();
-
         return replace(result, pairs);
     }
 
@@ -44,7 +61,6 @@ public enum Messages {
     public String toString() {
         if (cachedVal instanceof List<?>)
             return "";
-
         return cachedVal instanceof String ? (String) cachedVal : (String) defaultVal;
     }
 
@@ -55,7 +71,6 @@ public enum Messages {
         for (int i = 0; i < pairs.length - 1; i += 2) {
             String key = pairs[i];
             String val = pairs[i + 1];
-
             if (key != null && val != null) {
                 result = result.replace("%" + key + "%", val);
             }
@@ -66,12 +81,10 @@ public enum Messages {
 
     public String replaceList(String... pairs) {
         List<String> originalList = this.asList();
-
         if (originalList.isEmpty())
             return "";
 
         List<String> modifiedList = new ArrayList<>();
-
         for (String line : originalList) {
             if (line != null)
                 modifiedList.add(replace(line, pairs));
@@ -88,10 +101,8 @@ public enum Messages {
     public void flush() {
         if (cachedVal instanceof List<?> cachedList)
             cachedList.clear();
-
         if (defaultVal instanceof List<?> defaultList)
             defaultList.clear();
-
         this.cachedVal = null;
     }
 }
