@@ -3,6 +3,7 @@ package net.omni.sellwand;
 import net.omni.sellwand.chat.ChatRenderer;
 import net.omni.sellwand.chat.PaperChatRenderer;
 import net.omni.sellwand.chat.SpigotChatRenderer;
+import net.omni.sellwand.commands.SellWandCommand;
 import net.omni.sellwand.config.ConfigUtil;
 import net.omni.sellwand.config.SellWandConfig;
 import net.omni.sellwand.managers.MessagesManager;
@@ -37,6 +38,8 @@ public final class SellWand extends JavaPlugin {
 
         this.configUtil = new ConfigUtil(this);
         configUtil.load();
+
+
     }
 
     private void initChatRenderer() {
@@ -60,6 +63,7 @@ public final class SellWand extends JavaPlugin {
     }
 
     private void registerCommands() {
+        new SellWandCommand(this).register();
     }
 
     private void registerListeners() {
