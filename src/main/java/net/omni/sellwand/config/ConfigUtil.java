@@ -36,6 +36,8 @@ public class ConfigUtil {
     }
 
     public void flush() {
+        wandLore.clear();
+        containers.clear();
     }
 
     public void load() {
