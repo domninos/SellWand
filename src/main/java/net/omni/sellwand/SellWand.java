@@ -27,6 +27,7 @@ public final class SellWand extends JavaPlugin {
     private WandManager wandManager;
 
     private EconomyProvider economy;
+    private int reloadCount = 0;
 
     @Override
     public void onDisable() {
@@ -118,5 +119,13 @@ public final class SellWand extends JavaPlugin {
 
     public void setEconomyProvider(EconomyProvider economyProvider) {
         this.economy = economyProvider;
+    }
+
+    public int getReloadCount() {
+        return reloadCount;
+    }
+
+    public void incrementReloadCount() {
+        reloadCount++;
     }
 }

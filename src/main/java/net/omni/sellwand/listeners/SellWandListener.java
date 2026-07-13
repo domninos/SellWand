@@ -43,6 +43,11 @@ public class SellWandListener implements Listener {
 
         event.setCancelled(true);
 
+        if (wandManager.needsUpdate(itemInHand)) {
+            itemInHand = wandManager.updateWand(itemInHand);
+            player.getInventory().setItemInMainHand(itemInHand);
+        }
+
         if (!player.hasPermission("sellwand.use")) {
             plugin.sendMessage(player, Messages.NO_PERMS.toString());
             return;

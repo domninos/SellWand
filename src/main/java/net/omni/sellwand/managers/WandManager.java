@@ -17,22 +17,26 @@ public class WandManager {
     private final NamespacedKey wandKey;
     private final NamespacedKey usesKey;
     private final NamespacedKey multiplierKey;
+    private final NamespacedKey reloadKey;
 
     public WandManager(SellWand plugin) {
         this.plugin = plugin;
         this.wandKey = new NamespacedKey(plugin, "wand");
         this.usesKey = new NamespacedKey(plugin, "uses");
         this.multiplierKey = new NamespacedKey(plugin, "multiplier");
+        this.reloadKey = new NamespacedKey(plugin, "reload");
     }
 
     public ItemStack createWand(int uses, double multiplier) {
         Material material = Material.matchMaterial(plugin.getConfigUtil().getWandMaterial());
-        if (material == null) material = Material.BLAZE_ROD;
+        if (material == null)
+            material = Material.BLAZE_ROD;
 
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
 
-        if (meta == null) return item;
+        if (meta == null)
+            return item;
 
         int customModelData = plugin.getConfigUtil().getWandCustomModelData();
         if (customModelData > 0) {
@@ -42,6 +46,7 @@ public class WandManager {
         meta.getPersistentDataContainer().set(wandKey, PersistentDataType.BYTE, (byte) 1);
         meta.getPersistentDataContainer().set(usesKey, PersistentDataType.INTEGER, uses);
         meta.getPersistentDataContainer().set(multiplierKey, PersistentDataType.DOUBLE, multiplier);
+        meta.getPersistentDataContainer().set(reloadKey, PersistentDataType.INTEGER, plugin.getReloadCount());
 
         plugin.getChatRenderer().setDisplayName(meta, plugin.getConfigUtil().getWandName());
 
@@ -122,5 +127,21 @@ public class WandManager {
 
         Double multi = meta.getPersistentDataContainer().get(multiplierKey, PersistentDataType.DOUBLE);
         return multi != null ? multi : 1.0;
+    }
+
+    public boolean needsUpdate(ItemStack item) {
+        if (!isWand(item)) return false;
+
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) return false;
+
+        Integer storedReload = meta.getPersistentDataContainer().get(reloadKey, PersistentDataType.INTEGER);
+        return storedReload == null || storedReload != plugin.getReloadCount();
+    }
+
+    public ItemStack updateWand(ItemStack item) {
+        int uses = getUses(item);
+        double multiplier = getMultiplier(item);
+        return createWand(uses, multiplier);
     }
 }
