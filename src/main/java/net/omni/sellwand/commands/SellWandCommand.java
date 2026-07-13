@@ -2,6 +2,7 @@ package net.omni.sellwand.commands;
 
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.omni.sellwand.SellWand;
+import net.omni.sellwand.config.ConfigUtil;
 import net.omni.sellwand.managers.WandManager;
 import net.omni.sellwand.messages.MessageUtil;
 import net.omni.sellwand.messages.Messages;
@@ -112,6 +113,31 @@ public class SellWandCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
 
+            case "switch" -> {
+                if (!sender.hasPermission("sellwand.admin")) {
+                    plugin.sendMessage(sender, Messages.NO_PERMS.toString());
+                    return true;
+                }
+
+                ConfigUtil.MultiplierMode before = plugin.getConfigUtil().getMultiplierMode();
+                ConfigUtil.MultiplierMode after;
+
+                if (before == ConfigUtil.MultiplierMode.ADD)
+                    after = ConfigUtil.MultiplierMode.MULTIPLY;
+                else
+                    after = ConfigUtil.MultiplierMode.ADD;
+
+                plugin.getConfig().set("settings.multiplier-mode", after.name());
+
+                plugin.getConfigUtil().setMultiplierMode(after);
+                plugin.sendMessage(sender, Messages.SWITCH_MODES.replace(
+                        "before", before.name(),
+                        "after", after.name()
+                ));
+
+                return true;
+            }
+
             case "help" -> {
                 sendHelp(sender);
                 return true;
@@ -132,6 +158,7 @@ public class SellWandCommand implements CommandExecutor, TabCompleter {
 
         if (sender.hasPermission("sellwand.admin")) {
             MessageUtil.append("sellwand <#FFFF55>give</#FFFF55> <player> <uses> [multiplier]", "Give a sell wand to a player.", helpBuilder);
+            MessageUtil.append("sellwand <#FFFF55>switch</#FFFF55>", "Switches multiplier mode (ADD, MULTIPLY).", helpBuilder);
             MessageUtil.append("sellwand <#FFFF55>about</#FFFF55>", "Shows plugin information.", helpBuilder);
             MessageUtil.append("sellwand <#FFFF55>reload</#FFFF55>", "Reload configs and messages.", helpBuilder);
         }
@@ -166,7 +193,7 @@ public class SellWandCommand implements CommandExecutor, TabCompleter {
             return List.of();
 
         if (args.length == 1)
-            return filterStartsWith(Arrays.asList("give", "reload", "help"), args[0]);
+            return filterStartsWith(Arrays.asList("give", "reload", "help", "switch"), args[0]);
 
         if (args.length == 2 && args[0].equalsIgnoreCase("give"))
             return null;

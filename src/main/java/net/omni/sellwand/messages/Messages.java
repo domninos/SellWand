@@ -17,6 +17,7 @@ public enum Messages {
     SOLD_ITEMS_WITH_BOOST("sold_items_with_boost", "<green>Sold <white>%amount%</white> item(s) for <gold>$%price%</gold> (<white>%multiplier%x</white> boost)."),
     SOLD_ITEMS_WITH_USAGE_BOOST("sold_items_with_usage_boost", "<green>Sold <white>%amount%</white> item(s) for <gold>$%price%</gold> (<white>%multiplier%x</white> boost). Uses left: <white>%uses%</white>"),
 
+    SWITCH_MODES("switch_mode", "<green>Successfully switched from %before% to %after%.</green>"),
 
     NO_SELLABLE_ITEMS("no_sellable_items", "<red>No sellable items found in this container.</red>"),
 
@@ -64,6 +65,7 @@ public enum Messages {
     public String toString() {
         if (cachedVal instanceof List<?>)
             return "";
+
         return cachedVal instanceof String ? (String) cachedVal : (String) defaultVal;
     }
 
@@ -104,8 +106,10 @@ public enum Messages {
     public void flush() {
         if (cachedVal instanceof List<?> cachedList)
             cachedList.clear();
+
         if (defaultVal instanceof List<?> defaultList)
             defaultList.clear();
+
         this.cachedVal = null;
     }
 }

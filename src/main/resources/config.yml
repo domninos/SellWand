@@ -14,6 +14,7 @@ wand:
 settings:
   check-container-permissions: true
   remove-on-use-up: true
+  multiplier-mode: ADD # can only be "ADD" or "MULTIPLY", will default to "MULTIPLY"
 
 containers:
   - CHEST

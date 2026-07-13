@@ -22,6 +22,7 @@ public class ConfigUtil {
     private double wandDefaultMultiplier;
     private boolean checkContainerPermissions;
     private boolean removeOnUseUp;
+    private MultiplierMode multiplierMode;
     private Set<Material> containers;
 
     public ConfigUtil(SellWand plugin) {
@@ -37,7 +38,6 @@ public class ConfigUtil {
 
     public void flush() {
         wandLore.clear();
-        containers.clear();
     }
 
     public void load() {
@@ -50,6 +50,7 @@ public class ConfigUtil {
         this.wandDefaultMultiplier = getAndDefaultDouble("wand.default-multiplier", 1.0, savedDefaults);
         this.checkContainerPermissions = getAndDefaultBoolean("settings.check-container-permissions", true, savedDefaults);
         this.removeOnUseUp = getAndDefaultBoolean("settings.remove-on-use-up", true, savedDefaults);
+        this.multiplierMode = MultiplierMode.valueOf(getAndDefaultString("settings.multiplier-mode", "multiply", savedDefaults).toUpperCase());
 
         List<String> defaultLore = new ArrayList<>();
         defaultLore.add("");
@@ -128,7 +129,7 @@ public class ConfigUtil {
         return plugin.getConfig().getStringList(path);
     }
 
-    private @NonNull List<String> getDefaultContainers() {
+    private static @NonNull List<String> getDefaultContainers() {
         List<String> defaultContainers = new ArrayList<>();
         defaultContainers.add("CHEST");
         defaultContainers.add("TRAPPED_CHEST");
@@ -193,7 +194,20 @@ public class ConfigUtil {
         return removeOnUseUp;
     }
 
+    public MultiplierMode getMultiplierMode() {
+        return multiplierMode;
+    }
+
+    public void setMultiplierMode(MultiplierMode multiplierMode) {
+        this.multiplierMode = multiplierMode;
+    }
+
     public Set<Material> getContainers() {
         return containers;
+    }
+
+    public enum MultiplierMode {
+        MULTIPLY,
+        ADD
     }
 }
