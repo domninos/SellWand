@@ -116,6 +116,13 @@ public class SellWandListener implements Listener {
             plugin.sendConsole("<yellow>Could not load player price modifier. Using wand's multiplier only.</yellow>");
         }
 
+        // drop another one if there's more than one sell wand in hand
+        if (itemInHand.getAmount() > 1) {
+            itemInHand.setAmount(itemInHand.getAmount() - 1);
+            player.getInventory().setItemInMainHand(itemInHand);
+            player.getWorld().dropItemNaturally(player.getLocation(), itemInHand.clone());
+        }
+
         double finalPayout = totalPrice * combinedMultiplier;
 
         economy.deposit(player, finalPayout);
@@ -127,10 +134,11 @@ public class SellWandListener implements Listener {
             plugin.sendMessage(player, Messages.WAND_REMOVED.toString());
         } else {
             wandManager.setUses(itemInHand, newUses);
+            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
 
             plugin.sendMessage(player, Messages.SOLD_ITEMS_WITH_BOOST.replace(
                     "amount", String.format("%,d", totalAmount),
-                    "price", String.format("%.2f", finalPayout),
+                    "price", String.format("%,.2f", finalPayout),
                     "multiplier", wandManager.formatMultiplier(combinedMultiplier),
                     "uses", String.valueOf(newUses)));
         }
