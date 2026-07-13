@@ -1,0 +1,16 @@
+wand:
+  material: BLAZE_ROD
+  name: "<gradient:#FFAA00:#FFFF55>Sell Wand</gradient>"
+  custom-model-data: 0
+  default-uses: 100
+  default-multiplier: 1.0
+  lore:
+    - ""
+    - "<gray>Right-click a container to sell items.</gray>"
+    - ""
+    - "<yellow>Uses:</yellow> <white>%uses%</white>"
+    - "<yellow>Multiplier:</yellow> <white>%multiplier%x</white>"
+
+settings:
+  check-container-permissions: true
+  remove-on-use-up: true
