@@ -1,12 +1,17 @@
 package net.omni.sellwand;
 
+import net.brcdev.shopgui.ShopGuiPlusApi;
+import net.brcdev.shopgui.provider.economy.EconomyProvider;
 import net.omni.sellwand.chat.ChatRenderer;
 import net.omni.sellwand.chat.PaperChatRenderer;
 import net.omni.sellwand.chat.SpigotChatRenderer;
 import net.omni.sellwand.commands.SellWandCommand;
 import net.omni.sellwand.config.ConfigUtil;
 import net.omni.sellwand.config.SellWandConfig;
+import net.omni.sellwand.listeners.SellWandListener;
+import net.omni.sellwand.listeners.ShopGUIListener;
 import net.omni.sellwand.managers.MessagesManager;
+import net.omni.sellwand.managers.WandManager;
 import net.omni.sellwand.messages.MessageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -19,6 +24,9 @@ public final class SellWand extends JavaPlugin {
     private SellWandConfig messagesConfig;
     private MessagesManager messagesManager;
     private ConfigUtil configUtil;
+    private WandManager wandManager;
+
+    private EconomyProvider economy;
 
     @Override
     public void onDisable() {
@@ -39,7 +47,11 @@ public final class SellWand extends JavaPlugin {
         this.configUtil = new ConfigUtil(this);
         configUtil.load();
 
+        this.wandManager = new WandManager(this);
 
+        registerHooks();
+        registerCommands();
+        registerListeners();
     }
 
     private void initChatRenderer() {
@@ -55,11 +67,12 @@ public final class SellWand extends JavaPlugin {
         MessageUtil.init(chatRenderer);
     }
 
-    public void sendConsole(String message) {
-        chatRenderer.sendMessage(Bukkit.getConsoleSender(), chatRenderer.color(message));
-    }
-
     private void registerHooks() {
+        if (Bukkit.getPluginManager().getPlugin("Vault") == null)
+            sendConsole("<yellow>Vault not found. Economy features will not work.</yellow>");
+
+        if (Bukkit.getPluginManager().getPlugin("ShopGUIPlus") == null)
+            sendConsole("<yellow>ShopGUIPlus not found. Economy features will not work.</yellow>");
     }
 
     private void registerCommands() {
@@ -67,6 +80,12 @@ public final class SellWand extends JavaPlugin {
     }
 
     private void registerListeners() {
+        new SellWandListener(this).register();
+        new ShopGUIListener(this).register();
+    }
+
+    public void sendConsole(String message) {
+        chatRenderer.sendMessage(Bukkit.getConsoleSender(), chatRenderer.color(message));
     }
 
     public void sendMessage(CommandSender sender, String message) {
@@ -87,5 +106,17 @@ public final class SellWand extends JavaPlugin {
 
     public MessagesManager getMessagesManager() {
         return messagesManager;
+    }
+
+    public WandManager getWandManager() {
+        return wandManager;
+    }
+
+    public EconomyProvider getEconomyProvider() {
+        return economy;
+    }
+
+    public void setEconomyProvider(EconomyProvider economyProvider) {
+        this.economy = economyProvider;
     }
 }
