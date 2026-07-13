@@ -8,10 +8,12 @@ import net.omni.sellwand.messages.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,9 +60,11 @@ public class SellWandCommand implements CommandExecutor, TabCompleter {
 
                 int uses = plugin.getConfigUtil().getWandDefaultUses();
 
-                if (args.length == 3) {
+                if (args.length >= 3) {
                     try {
                         uses = Integer.parseInt(args[2]);
+                        if (uses <= 0)
+                            throw new NumberFormatException();
                     } catch (NumberFormatException e) {
                         plugin.sendMessage(sender, Messages.NOT_INTEGER.toString());
                         return true;
@@ -74,13 +78,16 @@ public class SellWandCommand implements CommandExecutor, TabCompleter {
                         if (multiplier <= 0)
                             throw new NumberFormatException();
                     } catch (NumberFormatException e) {
-                        plugin.sendMessage(sender, Messages.USAGE.toString());
+                        plugin.sendMessage(sender, Messages.NOT_INTEGER.toString());
                         return true;
                     }
                 }
 
                 WandManager wandManager = plugin.getWandManager();
-                target.getInventory().addItem(wandManager.createWand(uses, multiplier));
+                HashMap<Integer, ItemStack> leftOver = target.getInventory().addItem(wandManager.createWand(uses, multiplier));
+
+                if (!leftOver.isEmpty())
+                    target.getWorld().dropItemNaturally(target.getLocation(), leftOver.get(0));
 
                 plugin.sendMessage(sender, Messages.WAND_GIVEN.replace(
                         "player", target.getName(),
@@ -99,6 +106,7 @@ public class SellWandCommand implements CommandExecutor, TabCompleter {
                     return true;
                 }
 
+                plugin.incrementReloadCount();
                 plugin.getConfigUtil().reloadConfig();
                 plugin.getMessagesManager().loadMessages();
 
@@ -125,7 +133,7 @@ public class SellWandCommand implements CommandExecutor, TabCompleter {
         helpBuilder.append("  <gradient:#FFAA00:#FFFF55><bold>SellWand</bold></gradient>\n\n");
 
         if (sender.hasPermission("sellwand.admin")) {
-            MessageUtil.append("sellwand <#55FFFF>about</#55FFFF>", "Shows plugin information.", helpBuilder);
+            MessageUtil.append("sellwand <#FFFF55>about</#FFFF55>", "Shows plugin information.", helpBuilder);
             MessageUtil.append("sellwand <#FFFF55>give</#FFFF55> <player> <uses> [multiplier]", "Give a sell wand to a player.", helpBuilder);
             MessageUtil.append("sellwand <#FFFF55>reload</#FFFF55>", "Reload configs and messages.", helpBuilder);
         }
