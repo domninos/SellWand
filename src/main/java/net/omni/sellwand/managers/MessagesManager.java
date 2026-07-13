@@ -1,5 +1,6 @@
 package net.omni.sellwand.managers;
 import net.omni.sellwand.SellWand;
+import net.omni.sellwand.messages.Messages;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.List;
