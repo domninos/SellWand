@@ -1,10 +1,15 @@
 package net.omni.sellwand.config;
 
 import net.omni.sellwand.SellWand;
+import org.bukkit.Material;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class ConfigUtil {
     private final SellWand plugin;
@@ -17,6 +22,7 @@ public class ConfigUtil {
     private double wandDefaultMultiplier;
     private boolean checkContainerPermissions;
     private boolean removeOnUseUp;
+    private Set<Material> containers;
 
     public ConfigUtil(SellWand plugin) {
         this.plugin = plugin;
@@ -51,6 +57,20 @@ public class ConfigUtil {
         defaultLore.add("<yellow>Multiplier:</yellow> <white>%multiplier%x</white>");
 
         this.wandLore = getAndDefaultStringList("wand.lore", defaultLore, savedDefaults);
+
+        List<String> defaultContainers = getDefaultContainers();
+
+        List<String> containerStrings = getAndDefaultStringList("containers", defaultContainers, savedDefaults);
+        this.containers = containerStrings.stream()
+                .map(s -> {
+                    Material m = Material.matchMaterial(s);
+                    if (m == null) {
+                        plugin.sendConsole("<yellow>Unknown container material: " + s + "</yellow>");
+                    }
+                    return m;
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toUnmodifiableSet());
 
         if (savedDefaults.get() > 0) {
             plugin.saveConfig();
@@ -106,6 +126,39 @@ public class ConfigUtil {
         return plugin.getConfig().getStringList(path);
     }
 
+    private @NonNull List<String> getDefaultContainers() {
+        List<String> defaultContainers = new ArrayList<>();
+        defaultContainers.add("CHEST");
+        defaultContainers.add("TRAPPED_CHEST");
+        defaultContainers.add("BARREL");
+        defaultContainers.add("HOPPER");
+        defaultContainers.add("DROPPER");
+        defaultContainers.add("DISPENSER");
+        defaultContainers.add("FURNACE");
+        defaultContainers.add("BLAST_FURNACE");
+        defaultContainers.add("SMOKER");
+        defaultContainers.add("BREWING_STAND");
+        defaultContainers.add("ENDER_CHEST");
+        defaultContainers.add("SHULKER_BOX");
+        defaultContainers.add("WHITE_SHULKER_BOX");
+        defaultContainers.add("ORANGE_SHULKER_BOX");
+        defaultContainers.add("MAGENTA_SHULKER_BOX");
+        defaultContainers.add("LIGHT_BLUE_SHULKER_BOX");
+        defaultContainers.add("YELLOW_SHULKER_BOX");
+        defaultContainers.add("LIME_SHULKER_BOX");
+        defaultContainers.add("PINK_SHULKER_BOX");
+        defaultContainers.add("GRAY_SHULKER_BOX");
+        defaultContainers.add("LIGHT_GRAY_SHULKER_BOX");
+        defaultContainers.add("CYAN_SHULKER_BOX");
+        defaultContainers.add("PURPLE_SHULKER_BOX");
+        defaultContainers.add("BLUE_SHULKER_BOX");
+        defaultContainers.add("BROWN_SHULKER_BOX");
+        defaultContainers.add("GREEN_SHULKER_BOX");
+        defaultContainers.add("RED_SHULKER_BOX");
+        defaultContainers.add("BLACK_SHULKER_BOX");
+        return defaultContainers;
+    }
+
     public String getWandMaterial() {
         return wandMaterial;
     }
@@ -136,5 +189,9 @@ public class ConfigUtil {
 
     public boolean isRemoveOnUseUp() {
         return removeOnUseUp;
+    }
+
+    public Set<Material> getContainers() {
+        return containers;
     }
 }
