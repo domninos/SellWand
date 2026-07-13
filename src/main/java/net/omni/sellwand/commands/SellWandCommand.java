@@ -133,8 +133,8 @@ public class SellWandCommand implements CommandExecutor, TabCompleter {
         helpBuilder.append("  <gradient:#FFAA00:#FFFF55><bold>SellWand</bold></gradient>\n\n");
 
         if (sender.hasPermission("sellwand.admin")) {
-            MessageUtil.append("sellwand <#FFFF55>about</#FFFF55>", "Shows plugin information.", helpBuilder);
             MessageUtil.append("sellwand <#FFFF55>give</#FFFF55> <player> <uses> [multiplier]", "Give a sell wand to a player.", helpBuilder);
+            MessageUtil.append("sellwand <#FFFF55>about</#FFFF55>", "Shows plugin information.", helpBuilder);
             MessageUtil.append("sellwand <#FFFF55>reload</#FFFF55>", "Reload configs and messages.", helpBuilder);
         }
 
