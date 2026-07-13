@@ -11,7 +11,6 @@ import net.omni.sellwand.messages.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
 import org.bukkit.block.Container;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -62,9 +61,10 @@ public class SellWandListener implements Listener {
         Block block = event.getClickedBlock();
         if (block == null) return;
 
-        BlockState blockState = block.getState();
-        if (!(blockState instanceof Container container))
+        if (!plugin.getConfigUtil().getContainers().contains(block.getType()))
             return;
+
+        Container container = (Container) block.getState();
 
         if (plugin.getConfigUtil().isCheckContainerPermissions()) {
             if (!player.hasPermission("sellwand.open")) {
@@ -113,14 +113,7 @@ public class SellWandListener implements Listener {
             combinedMultiplier = wandMultiplier * priceModifier.getModifier();
         } catch (PlayerDataNotLoadedException e) {
             combinedMultiplier = wandMultiplier;
-            plugin.sendConsole("<yellow>Could not load player price modifier. Using wand's multiplier only.</yellow>");
-        }
-
-        // drop another one if there's more than one sell wand in hand
-        if (itemInHand.getAmount() > 1) {
-            itemInHand.setAmount(itemInHand.getAmount() - 1);
-            player.getInventory().setItemInMainHand(itemInHand);
-            player.getWorld().dropItemNaturally(player.getLocation(), itemInHand.clone());
+            plugin.sendConsole("<yellow>Could not load player price sell modifier. Using wand's multiplier only.</yellow>");
         }
 
         double finalPayout = totalPrice * combinedMultiplier;
@@ -128,19 +121,26 @@ public class SellWandListener implements Listener {
         economy.deposit(player, finalPayout);
 
         int newUses = uses - 1;
-        if (newUses <= 0 && plugin.getConfigUtil().isRemoveOnUseUp()) {
-            player.getInventory().setItemInMainHand(null);
-            player.playSound(player.getLocation(), Sound.ENTITY_ARMOR_STAND_BREAK, 1f, 1f);
-            plugin.sendMessage(player, Messages.WAND_REMOVED.toString());
-        } else {
-            wandManager.setUses(itemInHand, newUses);
-            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
 
+        if (newUses <= 0)
             plugin.sendMessage(player, Messages.SOLD_ITEMS_WITH_BOOST.replace(
+                    "amount", String.format("%,d", totalAmount),
+                    "price", String.format("%,.2f", finalPayout),
+                    "multiplier", wandManager.formatMultiplier(combinedMultiplier)));
+        else
+            plugin.sendMessage(player, Messages.SOLD_ITEMS_WITH_USAGE_BOOST.replace(
                     "amount", String.format("%,d", totalAmount),
                     "price", String.format("%,.2f", finalPayout),
                     "multiplier", wandManager.formatMultiplier(combinedMultiplier),
                     "uses", String.valueOf(newUses)));
+
+        wandManager.setUses(itemInHand, newUses);
+        player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
+
+        if (newUses == 0 && plugin.getConfigUtil().isRemoveOnUseUp()) {
+            player.getInventory().setItemInMainHand(null);
+            player.playSound(player.getLocation(), Sound.ENTITY_ARMOR_STAND_BREAK, 1f, 1f);
+            plugin.sendMessage(player, Messages.WAND_REMOVED.toString());
         }
     }
 

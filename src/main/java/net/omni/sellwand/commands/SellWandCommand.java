@@ -8,12 +8,10 @@ import net.omni.sellwand.messages.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -84,10 +82,10 @@ public class SellWandCommand implements CommandExecutor, TabCompleter {
                 }
 
                 WandManager wandManager = plugin.getWandManager();
-                HashMap<Integer, ItemStack> leftOver = target.getInventory().addItem(wandManager.createWand(uses, multiplier));
 
-                if (!leftOver.isEmpty())
-                    target.getWorld().dropItemNaturally(target.getLocation(), leftOver.get(0));
+                target.getInventory().addItem(wandManager.createWand(uses, multiplier)).values().forEach(
+                        item -> target.getWorld().dropItemNaturally(target.getLocation(), item)
+                );
 
                 plugin.sendMessage(sender, Messages.WAND_GIVEN.replace(
                         "player", target.getName(),
