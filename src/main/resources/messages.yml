@@ -9,8 +9,9 @@ reloaded: "<green>config.yml and messages.yml have been reloaded.</green>"
 
 not_integer: "<red>Please provide a number.</red>"
 
-sold_items: "<green>Sold <white>%amount%</white> item(s) for <gold>$%price%</gold>. Uses left: <white>%uses%</white>"
-sold_items_with_boost: "<green>Sold <white>%amount%</white> item(s) for <gold>$%price%</gold> (<white>%multiplier%x</white> boost). Uses left: <white>%uses%</white>"
+sold_items: "<green>Sold <white>%amount%</white> item(s) for <gold>$%price%</gold>."
+sold_items_with_boost: "<green>Sold <white>%amount%</white> item(s) for <gold>$%price%</gold> (<white>%multiplier%x</white> boost)"
+sold_items_with_usage_boost: "<green>Sold <white>%amount%</white> item(s) for <gold>$%price%</gold> (<white>%multiplier%x</white> boost). Uses left: <white>%uses%</white>"
 
 no_sellable_items: "<red>No sellable items found in this container.</red>"
 no_uses_left: "<red>This Sell Wand has no uses left!</red>"

@@ -13,7 +13,11 @@ public enum Messages {
     UNKNOWN_COMMAND("unknown_cmd", "<red>Unknown command.</red>"),
     RELOADED("reloaded", "<green>config.yml and messages.yml have been reloaded.</green>"),
 
-    SOLD_ITEMS("sold_items", "<green>Sold <white>%amount%</white> item(s) for <gold>$%price%</gold>. Uses left: <white>%uses%</white>"),
+    SOLD_ITEMS("sold_items", "<green>Sold <white>%amount%</white> item(s) for <gold>$%price%</gold>."),
+    SOLD_ITEMS_WITH_BOOST("sold_items_with_boost", "<green>Sold <white>%amount%</white> item(s) for <gold>$%price%</gold> (<white>%multiplier%x</white> boost)."),
+    SOLD_ITEMS_WITH_USAGE_BOOST("sold_items_with_usage_boost", "<green>Sold <white>%amount%</white> item(s) for <gold>$%price%</gold> (<white>%multiplier%x</white> boost). Uses left: <white>%uses%</white>"),
+
+
     NO_SELLABLE_ITEMS("no_sellable_items", "<red>No sellable items found in this container.</red>"),
 
     NOT_INTEGER("not_integer", "<red>Please provide an number.</red>"),
@@ -28,8 +32,7 @@ public enum Messages {
     ECON_NOT_FOUND("econ_not_found", "<red>Economy plugin not found. Cannot process sale.</red>"),
 
     WAND_REMOVED("wand_removed", "<red>Your Sell Wand broke!</red>"),
-    MULTIPLIER_INFO("multiplier_info", "<gray>Combined multiplier:</gray> <white>%multiplier%x</white>"),
-    SOLD_ITEMS_WITH_BOOST("sold_items_with_boost", "<green>Sold <white>%amount%</white> item(s) for <gold>$%price%</gold> (<white>%multiplier%x</white> boost). Uses left: <white>%uses%</white>");
+    MULTIPLIER_INFO("multiplier_info", "<gray>Combined multiplier:</gray> <white>%multiplier%x</white>");
 
     private final String path;
     private final Object defaultVal;
