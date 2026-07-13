@@ -81,7 +81,7 @@ public class SpigotChatRenderer implements ChatRenderer {
 
     @Override
     public String color(String message) {
-        return ChatColor.translateAlternateColorCodes('&', "&8[&bCrateyBackpack&8]&r " + miniToLegacy(message));
+        return ChatColor.translateAlternateColorCodes('&', "&8[&6&lSellWand&8]&r " + miniToLegacy(message));
     }
 
     @Override
