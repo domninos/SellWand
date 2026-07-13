@@ -3,7 +3,23 @@ description: $description
 version: '${version}'
 
 main: net.omni.sellwand.SellWand
-api-version: '1.21.11'
+api-version: '1.13'
 load: POSTWORLD
 
 authors: [ domninos ]
+
+depend: [ Vault, ShopGUIPlus ]
+
+commands:
+  sellwand:
+    description: SellWand main command
+    usage: /sellwand <give|reload|help>
+    aliases: [ sw ]
+
+permissions:
+  sellwand.use:
+    description: Allows using the sell wand
+    default: true
+  sellwand.admin:
+    description: Allows give and reload commands
+    default: op
