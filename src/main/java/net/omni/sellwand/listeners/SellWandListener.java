@@ -6,6 +6,7 @@ import net.brcdev.shopgui.modifier.PriceModifier;
 import net.brcdev.shopgui.modifier.PriceModifierActionType;
 import net.brcdev.shopgui.provider.economy.EconomyProvider;
 import net.omni.sellwand.SellWand;
+import net.omni.sellwand.config.ConfigUtil;
 import net.omni.sellwand.managers.WandManager;
 import net.omni.sellwand.messages.Messages;
 import org.bukkit.Bukkit;
@@ -110,7 +111,11 @@ public class SellWandListener implements Listener {
         try {
             PriceModifier priceModifier = ShopGuiPlusApi.getPriceModifier(player, PriceModifierActionType.SELL);
 
-            combinedMultiplier = wandMultiplier * priceModifier.getModifier();
+            if (plugin.getConfigUtil().getMultiplierMode() == ConfigUtil.MultiplierMode.MULTIPLY)
+                combinedMultiplier = wandMultiplier * priceModifier.getModifier();
+            else
+                combinedMultiplier = wandMultiplier + priceModifier.getModifier() - 1.0; // remove base 1x
+
         } catch (PlayerDataNotLoadedException e) {
             combinedMultiplier = wandMultiplier;
             plugin.sendConsole("<yellow>Could not load player price sell modifier. Using wand's multiplier only.</yellow>");
