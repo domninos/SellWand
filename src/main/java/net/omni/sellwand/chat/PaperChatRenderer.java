@@ -20,6 +20,10 @@ public class PaperChatRenderer implements ChatRenderer {
                     "<gray>[</gray><gradient:#FFAA00:#FFFF55>SellWand</gradient><gray>]</gray> "
             );
 
+    public static MiniMessage getMiniMessage() {
+        return MINI_MESSAGE;
+    }
+
     @Override
     public String parse(String message) {
         return LegacyComponentSerializer.legacySection().serialize(toComponent(message));

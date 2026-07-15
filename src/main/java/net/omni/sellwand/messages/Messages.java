@@ -19,6 +19,8 @@ public enum Messages {
 
     SWITCH_MODES("switch_mode", "<green>Successfully switched from %before% to %after%.</green>"),
 
+    LOG("console_log", "%player% sold all %amount% x %items% for $%price% to %shops% shop(s) (%multiplier%x boost)"),
+
     NO_SELLABLE_ITEMS("no_sellable_items", "<red>No sellable items found in this container.</red>"),
 
     NOT_INTEGER("not_integer", "<red>Please provide an number.</red>"),

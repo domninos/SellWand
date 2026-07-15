@@ -5,6 +5,10 @@ import net.brcdev.shopgui.exception.player.PlayerDataNotLoadedException;
 import net.brcdev.shopgui.modifier.PriceModifier;
 import net.brcdev.shopgui.modifier.PriceModifierActionType;
 import net.brcdev.shopgui.provider.economy.EconomyProvider;
+import net.brcdev.shopgui.shop.Shop;
+import net.brcdev.shopgui.shop.item.ShopItem;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.omni.sellwand.SellWand;
 import net.omni.sellwand.config.ConfigUtil;
 import net.omni.sellwand.managers.WandManager;
@@ -20,6 +24,12 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class SellWandListener implements Listener {
 
@@ -82,6 +92,9 @@ public class SellWandListener implements Listener {
 
         Inventory inventory = container.getInventory();
 
+        ItemStack[] items = inventory.getContents().clone();
+        Set<Shop> shops = new HashSet<>();
+
         double totalPrice = 0.0;
         int totalAmount = 0;
 
@@ -90,12 +103,19 @@ public class SellWandListener implements Listener {
             if (slot == null || slot.getType().isAir())
                 continue;
 
-            double price = ShopGuiPlusApi.getItemStackPriceSell(player, slot);
+            int amount = slot.getAmount();
+
+            ShopItem shopItem = ShopGuiPlusApi.getItemStackShopItem(player, slot);
+
+            double price = shopItem.getSellPriceForAmount(player, amount);
             if (price <= 0)
                 continue;
 
-            totalPrice += price * slot.getAmount();
-            totalAmount += slot.getAmount();
+            Shop shop = shopItem.getShop();
+            shops.add(shop);
+
+            totalPrice += price * amount;
+            totalAmount += amount;
 
             inventory.clear(i);
         }
@@ -146,6 +166,31 @@ public class SellWandListener implements Listener {
             player.getInventory().setItemInMainHand(null);
             player.playSound(player.getLocation(), Sound.ENTITY_ARMOR_STAND_BREAK, 1f, 1f);
             plugin.sendMessage(player, Messages.WAND_REMOVED.toString());
+        }
+
+        // log
+        // %player% sold all %amount% x %items% for $%price% to %shops% shop (%multiplier%x boost)
+        if (plugin.getConfigUtil().isConsoleLogging()) {
+            plugin.getLogger().info(Messages.LOG.replace(
+                    "player", player.getName(),
+                    "amount", String.format("%,d", totalAmount),
+                    "items", Arrays.stream(items)
+                            .filter(Objects::nonNull)
+                            .map(item -> {
+                                Component nameComp = item.hasItemMeta() && item.getItemMeta().hasDisplayName()
+                                        ? item.getItemMeta().displayName()
+                                        : Component.translatable(item.getType().translationKey());
+
+                                assert nameComp != null;
+                                String plainName = PlainTextComponentSerializer.plainText().serialize(nameComp);
+
+                                return item.getAmount() + "x " + plainName;
+                            })
+                            .collect(Collectors.joining(", ")),
+                    "price", String.format("%,.2f", finalPayout),
+                    "shops", shops.stream().map(Shop::getName).collect(Collectors.joining(", ")),
+                    "multiplier", wandManager.formatMultiplier(combinedMultiplier)
+            ));
         }
     }
 

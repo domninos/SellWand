@@ -24,6 +24,7 @@ public class ConfigUtil {
     private boolean removeOnUseUp;
     private MultiplierMode multiplierMode;
     private Set<Material> containers;
+    private boolean console_logging;
 
     public ConfigUtil(SellWand plugin) {
         this.plugin = plugin;
@@ -51,6 +52,8 @@ public class ConfigUtil {
         this.checkContainerPermissions = getAndDefaultBoolean("settings.check-container-permissions", true, savedDefaults);
         this.removeOnUseUp = getAndDefaultBoolean("settings.remove-on-use-up", true, savedDefaults);
         this.multiplierMode = MultiplierMode.valueOf(getAndDefaultString("settings.multiplier-mode", "multiply", savedDefaults).toUpperCase());
+
+        this.console_logging = getAndDefaultBoolean("settings.console-logging", true, savedDefaults);
 
         List<String> defaultLore = new ArrayList<>();
         defaultLore.add("");
@@ -204,6 +207,10 @@ public class ConfigUtil {
 
     public Set<Material> getContainers() {
         return containers;
+    }
+
+    public boolean isConsoleLogging() {
+        return console_logging;
     }
 
     public enum MultiplierMode {
