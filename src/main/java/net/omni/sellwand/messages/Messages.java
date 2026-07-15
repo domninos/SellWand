@@ -19,7 +19,7 @@ public enum Messages {
 
     SWITCH_MODES("switch_mode", "<green>Successfully switched from %before% to %after%.</green>"),
 
-    LOG("console_log", "%player% sold all %amount% x %items% for $%price% to %shops% shop(s) (%multiplier%x boost)"),
+    LOG("console_log", "<gray>%player% sold %items% to %shop% for $%price% (%multiplier%x boost)</gray>"),
 
     NO_SELLABLE_ITEMS("no_sellable_items", "<red>No sellable items found in this container.</red>"),
 
@@ -34,8 +34,7 @@ public enum Messages {
 
     ECON_NOT_FOUND("econ_not_found", "<red>Economy plugin not found. Cannot process sale.</red>"),
 
-    WAND_REMOVED("wand_removed", "<red>Your Sell Wand broke!</red>"),
-    MULTIPLIER_INFO("multiplier_info", "<gray>Combined multiplier:</gray> <white>%multiplier%x</white>");
+    WAND_REMOVED("wand_removed", "<red>Your Sell Wand broke!</red>");
 
     private final String path;
     private final Object defaultVal;

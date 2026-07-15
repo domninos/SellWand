@@ -25,11 +25,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public class SellWandListener implements Listener {
 
@@ -84,18 +80,11 @@ public class SellWandListener implements Listener {
             }
         }
 
-        EconomyProvider economy = plugin.getEconomyProvider();
-        if (economy == null) {
-            plugin.sendMessage(player, Messages.ECON_NOT_FOUND.toString());
-            return;
-        }
-
         Inventory inventory = container.getInventory();
 
-        ItemStack[] items = inventory.getContents().clone();
-        Set<Shop> shops = new HashSet<>();
+        Map<Shop, Double> shopPrices = new HashMap<>();
+        List<LogEntry> logEntries = new ArrayList<>();
 
-        double totalPrice = 0.0;
         int totalAmount = 0;
 
         for (int i = 0; i < inventory.getSize(); i++) {
@@ -103,20 +92,20 @@ public class SellWandListener implements Listener {
             if (slot == null || slot.getType().isAir())
                 continue;
 
-            int amount = slot.getAmount();
-
             ShopItem shopItem = ShopGuiPlusApi.getItemStackShopItem(player, slot);
+            if (shopItem == null)
+                continue;
 
+            int amount = slot.getAmount();
             double price = shopItem.getSellPriceForAmount(player, amount);
             if (price <= 0)
                 continue;
 
             Shop shop = shopItem.getShop();
-            shops.add(shop);
+            shopPrices.merge(shop, price, Double::sum);
+            logEntries.add(new LogEntry(shop, formatItemName(slot), amount, price));
 
-            totalPrice += price * amount;
             totalAmount += amount;
-
             inventory.clear(i);
         }
 
@@ -134,16 +123,53 @@ public class SellWandListener implements Listener {
             if (plugin.getConfigUtil().getMultiplierMode() == ConfigUtil.MultiplierMode.MULTIPLY)
                 combinedMultiplier = wandMultiplier * priceModifier.getModifier();
             else
-                combinedMultiplier = wandMultiplier + priceModifier.getModifier() - 1.0; // remove base 1x
+                combinedMultiplier = wandMultiplier + priceModifier.getModifier() - 1.0;
 
         } catch (PlayerDataNotLoadedException e) {
             combinedMultiplier = wandMultiplier;
             plugin.sendConsole("<yellow>Could not load player price sell modifier. Using wand's multiplier only.</yellow>");
         }
 
-        double finalPayout = totalPrice * combinedMultiplier;
+        double finalPayout = 0.0;
 
-        economy.deposit(player, finalPayout);
+        for (Map.Entry<Shop, Double> entry : shopPrices.entrySet()) {
+            double shopTotal = entry.getValue() * combinedMultiplier;
+            EconomyProvider shopEconomy = entry.getKey().getEconomyProvider();
+
+            if (shopEconomy == null) {
+                plugin.sendConsole("<yellow>Shop '" + entry.getKey().getName() + "' has no economy provider. Skipping.</yellow>");
+                continue;
+            }
+
+            shopEconomy.deposit(player, shopTotal);
+            finalPayout += shopTotal;
+        }
+
+        if (plugin.getConfigUtil().isConsoleLogging()) {
+            Map<String, LogEntry> consolidated = new LinkedHashMap<>();
+            for (LogEntry entry : logEntries) {
+                String key = entry.shop().getName() + "|" + entry.itemName();
+                consolidated.merge(key, entry, (a, b) ->
+                        new LogEntry(a.shop(), a.itemName(),
+                                a.amount() + b.amount(),
+                                a.price() + b.price()));
+            }
+
+            for (LogEntry entry : consolidated.values()) {
+
+                String formattedLog = Messages.LOG.replace(
+                        "player", player.getName(),
+                        "items", entry.amount() + "x " + entry.itemName(),
+                        "price", String.format("%,.2f", entry.price() * combinedMultiplier),
+                        "shop", entry.shop().getId(),
+                        "multiplier", wandManager.formatMultiplier(combinedMultiplier)
+                );
+
+                plugin.sendMessage(Bukkit.getConsoleSender(), formattedLog);
+            }
+
+            consolidated.clear();
+        }
 
         int newUses = uses - 1;
 
@@ -168,33 +194,23 @@ public class SellWandListener implements Listener {
             plugin.sendMessage(player, Messages.WAND_REMOVED.toString());
         }
 
-        // log
-        // %player% sold all %amount% x %items% for $%price% to %shops% shop (%multiplier%x boost)
-        if (plugin.getConfigUtil().isConsoleLogging()) {
-            plugin.getLogger().info(Messages.LOG.replace(
-                    "player", player.getName(),
-                    "amount", String.format("%,d", totalAmount),
-                    "items", Arrays.stream(items)
-                            .filter(Objects::nonNull)
-                            .map(item -> {
-                                Component nameComp = item.hasItemMeta() && item.getItemMeta().hasDisplayName()
-                                        ? item.getItemMeta().displayName()
-                                        : Component.translatable(item.getType().translationKey());
+        shopPrices.clear();
+        logEntries.clear();
+    }
 
-                                assert nameComp != null;
-                                String plainName = PlainTextComponentSerializer.plainText().serialize(nameComp);
+    private String formatItemName(ItemStack item) {
+        Component nameComp = item.hasItemMeta() && item.getItemMeta().hasDisplayName()
+                ? item.getItemMeta().displayName()
+                : Component.translatable(item.getType().translationKey());
 
-                                return item.getAmount() + "x " + plainName;
-                            })
-                            .collect(Collectors.joining(", ")),
-                    "price", String.format("%,.2f", finalPayout),
-                    "shops", shops.stream().map(Shop::getName).collect(Collectors.joining(", ")),
-                    "multiplier", wandManager.formatMultiplier(combinedMultiplier)
-            ));
-        }
+        assert nameComp != null;
+        return PlainTextComponentSerializer.plainText().serialize(nameComp);
     }
 
     public void register() {
         Bukkit.getPluginManager().registerEvents(this, plugin);
+    }
+
+    private record LogEntry(Shop shop, String itemName, int amount, double price) {
     }
 }

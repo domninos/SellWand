@@ -11,7 +11,7 @@ not_integer: "<red>Please provide a number.</red>"
 
 switch_mode: "<green>Successfully switched from %before% to %after%.</green>"
 
-console_log: "%player% sold all %amount% x %items% for $%price% to %shops% shop(s) (%multiplier%x boost)"
+console_log: "<gray>%player% sold %items% to %shop% for $%price% (%multiplier%x boost)</gray>"
 
 sold_items: "<green>Sold <white>%amount%</white> item(s) for <gold>$%price%</gold>."
 sold_items_with_boost: "<green>Sold <white>%amount%</white> item(s) for <gold>$%price%</gold> (<white>%multiplier%x</white> boost)"
