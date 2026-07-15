@@ -1,7 +1,5 @@
 package net.omni.sellwand;
 
-import net.brcdev.shopgui.ShopGuiPlusApi;
-import net.brcdev.shopgui.provider.economy.EconomyProvider;
 import net.omni.sellwand.chat.ChatRenderer;
 import net.omni.sellwand.chat.PaperChatRenderer;
 import net.omni.sellwand.chat.SpigotChatRenderer;
@@ -9,7 +7,6 @@ import net.omni.sellwand.commands.SellWandCommand;
 import net.omni.sellwand.config.ConfigUtil;
 import net.omni.sellwand.config.SellWandConfig;
 import net.omni.sellwand.listeners.SellWandListener;
-import net.omni.sellwand.listeners.ShopGUIListener;
 import net.omni.sellwand.managers.MessagesManager;
 import net.omni.sellwand.managers.WandManager;
 import net.omni.sellwand.messages.MessageUtil;
@@ -26,7 +23,6 @@ public final class SellWand extends JavaPlugin {
     private ConfigUtil configUtil;
     private WandManager wandManager;
 
-    private EconomyProvider economy;
     private int reloadCount = 0;
 
     @Override
@@ -82,7 +78,6 @@ public final class SellWand extends JavaPlugin {
 
     private void registerListeners() {
         new SellWandListener(this).register();
-        new ShopGUIListener(this).register();
     }
 
     public void sendConsole(String message) {
@@ -111,14 +106,6 @@ public final class SellWand extends JavaPlugin {
 
     public WandManager getWandManager() {
         return wandManager;
-    }
-
-    public EconomyProvider getEconomyProvider() {
-        return economy;
-    }
-
-    public void setEconomyProvider(EconomyProvider economyProvider) {
-        this.economy = economyProvider;
     }
 
     public int getReloadCount() {
