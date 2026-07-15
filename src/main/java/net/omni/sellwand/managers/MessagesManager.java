@@ -1,4 +1,5 @@
 package net.omni.sellwand.managers;
+
 import net.omni.sellwand.SellWand;
 import net.omni.sellwand.messages.Messages;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -20,21 +21,17 @@ public class MessagesManager {
         int savedDefaults = 0;
 
         for (Messages message : Messages.values()) {
-            if (message.getDefaultVal() instanceof List<?>) {
-                if (!config.contains(message.getPath())) {
-                    config.set(message.getPath(), message.getDefaultVal());
-                    savedDefaults++;
-                }
-
-                message.setCachedVal(config.getStringList(message.getPath()));
-            } else {
-                if (!config.contains(message.getPath())) {
-                    config.set(message.getPath(), message.getDefaultVal());
-                    savedDefaults++;
-                }
-
-                message.setCachedVal(config.getString(message.getPath()));
+            if (!config.contains(message.getPath())) {
+                config.set(message.getPath(), message.getDefaultVal());
+                savedDefaults++;
+                plugin.sendConsole("message: " + message.getPath() + " default");
             }
+
+            Object toCached = message.getDefaultVal() instanceof List<?>
+                    ? config.getStringList(message.getPath())
+                    : config.getString(message.getPath());
+
+            message.setCachedVal(toCached);
         }
 
         if (savedDefaults > 0) {
