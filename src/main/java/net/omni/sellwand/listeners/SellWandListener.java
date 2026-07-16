@@ -119,14 +119,16 @@ public class SellWandListener implements Listener {
 
         double wandMultiplier = wandManager.getMultiplier(itemInHand);
         double combinedMultiplier;
+        double modifier = 1;
 
         try {
             PriceModifier priceModifier = ShopGuiPlusApi.getPriceModifier(player, PriceModifierActionType.SELL);
+            modifier = priceModifier.getModifier();
 
             if (plugin.getConfigUtil().getMultiplierMode() == ConfigUtil.MultiplierMode.MULTIPLY)
-                combinedMultiplier = wandMultiplier * priceModifier.getModifier();
+                combinedMultiplier = wandMultiplier * modifier;
             else
-                combinedMultiplier = wandMultiplier + priceModifier.getModifier() - 1.0;
+                combinedMultiplier = wandMultiplier + modifier - 1.0;
 
         } catch (PlayerDataNotLoadedException e) {
             combinedMultiplier = wandMultiplier;
@@ -136,7 +138,8 @@ public class SellWandListener implements Listener {
         double finalPayout = 0.0;
 
         for (Map.Entry<Shop, Double> entry : shopPrices.entrySet()) {
-            double shopTotal = entry.getValue() * combinedMultiplier;
+            double price = entry.getValue() / modifier; // price (already with multiplier)
+            double shopTotal = price * combinedMultiplier;
             EconomyProvider shopEconomy = entry.getKey().getEconomyProvider();
 
             if (shopEconomy == null) {
@@ -150,6 +153,7 @@ public class SellWandListener implements Listener {
 
         if (plugin.getConfigUtil().isConsoleLogging()) {
             Map<String, LogEntry> consolidated = new LinkedHashMap<>();
+
             for (LogEntry entry : logEntries) {
                 String key = entry.shop().getName() + "|" + entry.itemName();
                 consolidated.merge(key, entry, (a, b) ->
@@ -159,11 +163,13 @@ public class SellWandListener implements Listener {
             }
 
             for (LogEntry entry : consolidated.values()) {
+                double price = entry.price() / modifier; // price (already with multiplier)
+                double shopTotal = price * combinedMultiplier;
 
                 String formattedLog = Messages.LOG.replace(
                         "player", player.getName(),
                         "items", entry.amount() + "x " + entry.itemName(),
-                        "price", String.format("%,.2f", entry.price() * combinedMultiplier),
+                        "price", String.format("%,.2f", shopTotal),
                         "shop", entry.shop().getId(),
                         "multiplier", wandManager.formatMultiplier(combinedMultiplier)
                 );
@@ -171,7 +177,7 @@ public class SellWandListener implements Listener {
                 plugin.sendMessage(Bukkit.getConsoleSender(), formattedLog);
             }
 
-            consolidated.clear();
+            consolidated.clear(); // garbage
         }
 
         int newUses = uses - 1;
@@ -197,8 +203,8 @@ public class SellWandListener implements Listener {
             plugin.sendMessage(player, Messages.WAND_REMOVED.toString());
         }
 
-        shopPrices.clear();
-        logEntries.clear();
+        shopPrices.clear(); // garbage
+        logEntries.clear(); // garbage
     }
 
     private String formatItemName(ItemStack item) {

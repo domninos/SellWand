@@ -33,12 +33,8 @@ public class GriefPreventionHook {
                 return false;
             }
 
-            System.out.println("true");
-
             return true;
         }
-
-        System.out.println("false");
 
         return false;
     }
