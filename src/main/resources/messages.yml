@@ -24,6 +24,7 @@ wand_given: "<green>Given <white>%player%</white> a Sell Wand (%uses% uses, %mul
 wand_received: "<green>You received a Sell Wand!</green>"
 
 container_no_perm: "<red>You don't have permission to access this container.</red>"
+claim_no_perm: "<red>You don't have permission to access this container in this claim.</red>"
 
 econ_not_found: "<red>Economy plugin not found. Cannot process sale.</red>"
 wand_removed: "<red>Your Sell Wand broke!</red>"

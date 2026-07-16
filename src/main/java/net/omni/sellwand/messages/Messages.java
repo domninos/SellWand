@@ -32,6 +32,8 @@ public enum Messages {
 
     CONTAINER_NO_PERM("container_no_perm", "<red>You don't have permission to access this container.</red>"),
 
+    CLAIM_NO_PERM("claim_no_perm", "<red>You don't have permission to access this container in this claim.</red>"),
+
     ECON_NOT_FOUND("econ_not_found", "<red>Economy plugin not found. Cannot process sale.</red>"),
 
     WAND_REMOVED("wand_removed", "<red>Your Sell Wand broke!</red>");

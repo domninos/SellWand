@@ -24,7 +24,6 @@ public class MessagesManager {
             if (!config.contains(message.getPath())) {
                 config.set(message.getPath(), message.getDefaultVal());
                 savedDefaults++;
-                plugin.sendConsole("message: " + message.getPath() + " default");
             }
 
             Object toCached = message.getDefaultVal() instanceof List<?>

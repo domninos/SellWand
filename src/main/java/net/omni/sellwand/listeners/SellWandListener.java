@@ -80,6 +80,9 @@ public class SellWandListener implements Listener {
             }
         }
 
+        if (!plugin.getGriefPreventionHook().hasClaimPerms(player, block))
+            return;
+
         Inventory inventory = container.getInventory();
 
         Map<Shop, Double> shopPrices = new HashMap<>();

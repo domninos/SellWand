@@ -10,6 +10,8 @@ authors: [ domninos ]
 
 depend: [ Vault, ShopGUIPlus ]
 
+softdepend: [ GriefPrevention ]
+
 commands:
   sellwand:
     description: SellWand main command

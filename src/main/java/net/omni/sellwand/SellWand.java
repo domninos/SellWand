@@ -6,6 +6,7 @@ import net.omni.sellwand.chat.SpigotChatRenderer;
 import net.omni.sellwand.commands.SellWandCommand;
 import net.omni.sellwand.config.ConfigUtil;
 import net.omni.sellwand.config.SellWandConfig;
+import net.omni.sellwand.hook.GriefPreventionHook;
 import net.omni.sellwand.listeners.SellWandListener;
 import net.omni.sellwand.managers.MessagesManager;
 import net.omni.sellwand.managers.WandManager;
@@ -22,6 +23,8 @@ public final class SellWand extends JavaPlugin {
     private MessagesManager messagesManager;
     private ConfigUtil configUtil;
     private WandManager wandManager;
+
+    private GriefPreventionHook griefPreventionHook;
 
     private int reloadCount = 0;
 
@@ -46,9 +49,13 @@ public final class SellWand extends JavaPlugin {
 
         this.wandManager = new WandManager(this);
 
+        this.griefPreventionHook = new GriefPreventionHook(this);
+
         registerHooks();
         registerCommands();
         registerListeners();
+
+        sendConsole("<green>Successfully started " + getDescription().getName() + "-v" + getDescription().getVersion() + " </green>");
     }
 
     private void initChatRenderer() {
@@ -70,6 +77,9 @@ public final class SellWand extends JavaPlugin {
 
         if (Bukkit.getPluginManager().getPlugin("ShopGUIPlus") == null)
             sendConsole("<yellow>ShopGUIPlus not found. Economy features will not work.</yellow>");
+
+        if (Bukkit.getPluginManager().getPlugin("GriefPrevention") != null)
+            griefPreventionHook.init();
     }
 
     private void registerCommands() {
@@ -114,5 +124,9 @@ public final class SellWand extends JavaPlugin {
 
     public void incrementReloadCount() {
         reloadCount++;
+    }
+
+    public GriefPreventionHook getGriefPreventionHook() {
+        return griefPreventionHook;
     }
 }
