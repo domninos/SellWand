@@ -26,7 +26,7 @@ public class GriefPreventionHook {
         Claim claim = gp.dataStore.getClaimAt(block.getLocation(), false, null);
 
         if (claim != null) {
-            Supplier<String> denial = claim.checkPermission(player, ClaimPermission.Container, null);
+            Supplier<String> denial = claim.checkPermission(player, ClaimPermission.Inventory, null);
 
             if (denial != null && denial.get() != null) {
                 plugin.sendMessage(player, Messages.CLAIM_NO_PERM.toString());
