@@ -19,7 +19,7 @@ public enum Messages {
 
     SWITCH_MODES("switch_mode", "<green>Successfully switched from %before% to %after%.</green>"),
 
-    LOG("console_log", "<gray>%player% sold %items% to %shop% for $%price% (%multiplier%x boost)</gray>"),
+    LOG("console_log", "<gray>%player% sold %items% to %shop% for $%price% (%multiplier%x boost) | New Balance: $%new%</gray>"),
 
     NO_SELLABLE_ITEMS("no_sellable_items", "<red>No sellable items found in this container.</red>"),
 

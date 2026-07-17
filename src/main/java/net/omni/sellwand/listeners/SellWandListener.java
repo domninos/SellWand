@@ -168,10 +168,11 @@ public class SellWandListener implements Listener {
 
                 String formattedLog = Messages.LOG.replace(
                         "player", player.getName(),
-                        "items", entry.amount() + "x " + entry.itemName(),
+                        "items", String.format("%,d", entry.amount()) + "x " + entry.itemName(),
                         "price", String.format("%,.2f", shopTotal),
                         "shop", entry.shop().getId(),
-                        "multiplier", wandManager.formatMultiplier(combinedMultiplier)
+                        "multiplier", wandManager.formatMultiplier(combinedMultiplier),
+                        "new", String.format("%,.2f", entry.shop().getEconomyProvider().getBalance(player))
                 );
 
                 plugin.sendMessage(Bukkit.getConsoleSender(), formattedLog);
