@@ -21,7 +21,6 @@ commands:
 permissions:
   sellwand.use:
     description: Allows using the sell wand
-    default: true
   sellwand.admin:
     description: Allows give and reload commands
     default: op
