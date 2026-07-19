@@ -4,7 +4,6 @@ import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.ClaimPermission;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import net.omni.sellwand.SellWand;
-import net.omni.sellwand.messages.Messages;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
@@ -28,24 +27,19 @@ public class GriefPreventionHook {
         if (claim != null) {
             Supplier<String> denial = claim.checkPermission(player, ClaimPermission.Inventory, null);
 
-            if (denial != null && denial.get() != null) {
-                plugin.sendMessage(player, Messages.CLAIM_NO_PERM.toString());
-                return false;
-            }
-
-            return true;
+            return denial == null || denial.get() == null;
         }
 
-        return false;
+        return true;
+    }
+
+    public boolean isEnabled() {
+        return this.enabled;
     }
 
     public void init() {
         this.enabled = true;
 
         plugin.sendConsole("<green>Successfully hooked into GriefPrevention</green>");
-    }
-
-    public boolean isEnabled() {
-        return this.enabled;
     }
 }

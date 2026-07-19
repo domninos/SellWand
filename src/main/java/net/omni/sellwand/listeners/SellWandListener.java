@@ -66,7 +66,8 @@ public class SellWandListener implements Listener {
         }
 
         Block block = event.getClickedBlock();
-        if (block == null) return;
+        if (block == null)
+            return;
 
         if (!plugin.getConfigUtil().getContainers().contains(block.getType()))
             return;
@@ -80,8 +81,10 @@ public class SellWandListener implements Listener {
             }
         }
 
-        if (!plugin.getGriefPreventionHook().hasClaimPerms(player, block))
+        if (!plugin.getGriefPreventionHook().hasClaimPerms(player, block)) {
+            plugin.sendMessage(player, Messages.CLAIM_NO_PERM.toString());
             return;
+        }
 
         Inventory inventory = container.getInventory();
 
