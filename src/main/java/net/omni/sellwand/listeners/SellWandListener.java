@@ -140,6 +140,13 @@ public class SellWandListener implements Listener {
 
         double finalPayout = 0.0;
 
+        Map<Shop, Double> initialBalances = new HashMap<>();
+        for (Shop shop : shopPrices.keySet()) {
+            EconomyProvider econ = shop.getEconomyProvider();
+            if (econ != null)
+                initialBalances.put(shop, econ.getBalance(player));
+        }
+
         for (Map.Entry<Shop, Double> entry : shopPrices.entrySet()) {
             double price = entry.getValue() / modifier; // price (already with multiplier)
             double shopTotal = price * combinedMultiplier;
@@ -165,9 +172,13 @@ public class SellWandListener implements Listener {
                                 a.price() + b.price()));
             }
 
+            Map<Shop, Double> runningBalance = new HashMap<>(initialBalances);
+
             for (LogEntry entry : consolidated.values()) {
-                double price = entry.price() / modifier; // price (already with multiplier)
+                double price = entry.price() / modifier;
                 double shopTotal = price * combinedMultiplier;
+
+                double newBalance = runningBalance.merge(entry.shop(), shopTotal, Double::sum);
 
                 String formattedLog = Messages.LOG.replace(
                         "player", player.getName(),
@@ -175,13 +186,14 @@ public class SellWandListener implements Listener {
                         "price", String.format("%,.2f", shopTotal),
                         "shop", entry.shop().getId(),
                         "multiplier", wandManager.formatMultiplier(combinedMultiplier),
-                        "new", String.format("%,.2f", entry.shop().getEconomyProvider().getBalance(player))
+                        "new", String.format("%,.2f", newBalance)
                 );
 
                 plugin.sendMessage(Bukkit.getConsoleSender(), formattedLog);
             }
 
             consolidated.clear(); // garbage
+            runningBalance.clear(); // garbage
         }
 
         int newUses = uses - 1;
@@ -209,6 +221,7 @@ public class SellWandListener implements Listener {
 
         shopPrices.clear(); // garbage
         logEntries.clear(); // garbage
+
     }
 
     private String formatItemName(ItemStack item) {
