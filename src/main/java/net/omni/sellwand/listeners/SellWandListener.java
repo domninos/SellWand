@@ -22,6 +22,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -38,6 +39,9 @@ public class SellWandListener implements Listener {
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
+            return;
+
+        if (event.getHand() != EquipmentSlot.HAND)
             return;
 
         Player player = event.getPlayer();
@@ -221,7 +225,7 @@ public class SellWandListener implements Listener {
 
         shopPrices.clear(); // garbage
         logEntries.clear(); // garbage
-
+        initialBalances.clear(); // garbage
     }
 
     private String formatItemName(ItemStack item) {
